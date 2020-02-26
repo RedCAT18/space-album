@@ -11,7 +11,7 @@ export const NAV_LIST = [
   },
   {
     id: 3,
-    name: 'photos',
-    path: '/photos'
+    name: 'Search',
+    path: '/search'
   }
 ];

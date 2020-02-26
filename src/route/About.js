@@ -69,8 +69,8 @@ const About = () => {
       </Title>
       <Text>
         <Sentence>
-          Hello. This page is for showing beautiful space photos and knowledges
-          from NASA.
+          Hello. This page is for showing beautiful space photos, videos and
+          knowledges from NASA.
           <br />
         </Sentence>
       </Text>

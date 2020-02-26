@@ -2,6 +2,7 @@ import axios from 'axios';
 import { key as API_KEY } from './key';
 
 const BASE_URL = 'https://api.nasa.gov/';
+const SEARCH_URL = 'https://images-api.nasa.gov/';
 
 export const api = {
   getAPod: () =>
@@ -27,5 +28,11 @@ export const api = {
           console.log(res.status);
           return { error: 'there is an error. please try again later.' };
         }
-      })
+      }),
+  getSearch: quote => {
+    console.log(quote);
+    axios.get(`${SEARCH_URL}search?q=${quote}`).then(res => {
+      console.log(res);
+    });
+  }
 };
