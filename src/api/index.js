@@ -29,10 +29,19 @@ export const api = {
           return { error: 'there is an error. please try again later.' };
         }
       }),
-  getSearch: quote => {
-    console.log(quote);
-    axios.get(`${SEARCH_URL}search?q=${quote}`).then(res => {
-      console.log(res);
-    });
-  }
+  getSearch: payload =>
+    // console.log(payload);
+    axios
+      .get(
+        `${SEARCH_URL}search?${payload.category}=${payload.quote}&media_type=image`
+      )
+      .then(res => {
+        if (res.status === 200) {
+          // console.log(res.data);
+          const { items } = res.data.collection;
+          return items;
+        } else {
+          return { error: 'there is an error. please try again later.' };
+        }
+      })
 };

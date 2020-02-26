@@ -3,12 +3,14 @@ import styled from 'styled-components';
 
 import { api } from '../api/index';
 
+import Show from '../components/Show/';
+
 const categories = [
-  { id: 1, name: 'q' },
-  { id: 2, name: 'description' },
-  { id: 3, name: 'keywords' },
-  { id: 4, name: 'title' },
-  { id: 5, name: 'location' }
+  { id: 1, name: 'Quote', value: 'q' },
+  { id: 2, name: 'Description', value: 'description' },
+  { id: 3, name: 'Keywords', value: 'keywords' },
+  { id: 4, name: 'Title', value: 'title' },
+  { id: 5, name: 'Location', value: 'location' }
 ];
 
 const Container = styled.div`
@@ -23,6 +25,7 @@ const Container = styled.div`
   box-shadow: 0 13px 27px -5px rgba(50, 50, 93, 0.25),
     0 8px 16px -8px rgba(0, 0, 0, 0.3), 0 -6px 16px -6px rgba(0, 0, 0, 0.025);
 `;
+
 const Title = styled.div`
   text-align: center;
   font-size: 32px;
@@ -37,16 +40,80 @@ const SearchBox = styled.div`
   padding: 20px;
   border-top: 1px solid white;
   border-bottom: 1px solid white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const Selection = styled.select`
+  border-radius: 0.5em;
+  height: 25px;
+  border: 1px solid transparent;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat, repeat;
+  background-position: right 0.7em top 50%, 0 0;
+  background-size: 0.65em auto, 100%;
+  text-transform: capitalize;
+  font-size: 14px;
+  font-weight: 100;
+  flex: 1;
+  height: 40px;
+  margin-right: 10px;
+`;
+
+const TextInput = styled.input`
+  border: none;
+  border-bottom: 2px solid white;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 100;
+  flex: 3;
+  height: 35px;
+  margin-right: 10px;
+  padding-left: 10px;
+`;
+
+const SubmitButton = styled.button`
+  border: none;
+  border-radius: 5px;
+  flex: 1;
+  font-size: 18px;
+  font-weight: 100;
+  background-color: white;
+`;
+
+const Content = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
 `;
 
 const Search = () => {
   const [quote, setQuote] = useState('');
   const [category, setCategory] = useState('q');
+  const [results, setResults] = useState(null);
 
-  const sendRequest = async quote => {
-    await api.getSearch(quote).then(res => {
-      console.log(res);
-    });
+  const handleChange = e => {
+    setQuote(e.target.value);
+  };
+
+  const handleCategory = e => {
+    setCategory(e.target.value);
+  };
+
+  const sendRequest = async () => {
+    if (quote !== '') {
+      const payload = { quote, category };
+      await api.getSearch(payload).then(res => {
+        setResults(res.slice(0, 10));
+        // console.log(res.slice());
+      });
+    }
   };
 
   return (
@@ -54,7 +121,25 @@ const Search = () => {
       <Title>
         <h1>Search</h1>
       </Title>
-      <SearchBox>Search options</SearchBox>
+      <SearchBox>
+        <Selection onChange={handleCategory}>
+          {categories.map(category => (
+            <option key={category.id} value={category.value}>
+              {category.name}
+            </option>
+          ))}
+        </Selection>
+        <TextInput
+          type="text"
+          placeholder="Input text for search..."
+          onChange={handleChange}
+        />
+        <SubmitButton onClick={sendRequest}>Search</SubmitButton>
+      </SearchBox>
+      <Content>
+        {results &&
+          results.map((result, idx) => <Show key={idx} {...result} />)}
+      </Content>
     </Container>
   );
 };
