@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { api } from '../api/index';
 
 import Show from '../components/Show/';
+import Arrow from '../components/Arrow/';
 
 const categories = [
   { id: 1, name: 'Quote', value: 'q' },
@@ -83,6 +84,9 @@ const SubmitButton = styled.button`
   font-size: 18px;
   font-weight: 100;
   background-color: white;
+  :active {
+    transform: scale(0.98);
+  }
 `;
 
 const Content = styled.div`
@@ -93,10 +97,31 @@ const Content = styled.div`
   width: 90%;
 `;
 
+const ArrowZone = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+  padding: 10px;
+`;
+
+const separatePages = data => {
+  //100개 배열을 10개씩 나누어 array에 담기
+  let array = [];
+  for (let i = 0; i < 10; i++) {
+    array.push(data.slice(i * 10, (i + 1) * 10));
+  }
+  return array;
+};
+
 const Search = () => {
   const [quote, setQuote] = useState('');
   const [category, setCategory] = useState('q');
+  const [data, setData] = useState(null);
   const [results, setResults] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [pages, setPages] = useState(1);
 
   const handleChange = e => {
     setQuote(e.target.value);
@@ -107,13 +132,29 @@ const Search = () => {
   };
 
   const sendRequest = async () => {
+    setLoading(true);
+    setQuote('');
+    setCategory('q');
     if (quote !== '') {
       const payload = { quote, category };
       await api.getSearch(payload).then(res => {
-        setResults(res.slice(0, 10));
-        // console.log(res.slice());
+        const arrays = separatePages(res);
+        console.log(arrays);
+        setResults(arrays[0]);
+        setData(arrays);
+        // setResults(res.slice(0, 10));
+        setLoading(false);
+        document.getElementById('inputText').value = '';
       });
     }
+  };
+
+  const goPrevPage = () => {};
+
+  const goNextPage = () => {};
+
+  const RenderArrow = dirt => {
+    return results ? <Arrow props={dirt} /> : null;
   };
 
   return (
@@ -130,16 +171,25 @@ const Search = () => {
           ))}
         </Selection>
         <TextInput
+          id="inputText"
           type="text"
           placeholder="Input text for search..."
           onChange={handleChange}
         />
         <SubmitButton onClick={sendRequest}>Search</SubmitButton>
       </SearchBox>
+
       <Content>
-        {results &&
-          results.map((result, idx) => <Show key={idx} {...result} />)}
+        {results && results.length !== 0
+          ? results.map((result, idx) => <Show key={idx} {...result} />)
+          : loading && <img src="./assets/reload.svg" alt="loading" />}
       </Content>
+      {/* {RenderArrow('Left')} */}
+      {/* {RenderArrow('Right')} */}
+      <ArrowZone>
+        <Arrow props={'Left'} />
+        <Arrow props={'Right'} />
+      </ArrowZone>
     </Container>
   );
 };

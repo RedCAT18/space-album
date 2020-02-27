@@ -34,7 +34,6 @@ const Description = styled.div`
 `;
 
 const Show = props => {
-  console.log(props);
   return (
     <Frame>
       <img src={props.links[0].href} alt={props.data[0].title} />
