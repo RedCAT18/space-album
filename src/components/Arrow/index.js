@@ -16,7 +16,7 @@ const Position = styled.div`
 
 const Arrow = ({ props }) => {
   const iconName =
-    props === 'Right' ? faChevronCircleRight : faChevronCircleLeft;
+    props === 'next' ? faChevronCircleRight : faChevronCircleLeft;
 
   return (
     <Position>

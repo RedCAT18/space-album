@@ -34,7 +34,25 @@ const Text = styled.div`
   }
 `;
 
-const Sentence = styled.p`
+const Contents = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
+const Photo = styled.div`
+  flex: 1;
+  margin-right: 20px;
+
+  img {
+    max-width: 260px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 13px 27px -5px rgba(50, 50, 93, 0.25),
+      0 8px 16px -8px rgba(0, 0, 0, 0.3), 0 -6px 16px -6px rgba(0, 0, 0, 0.025);
+  }
+`;
+
+const Sentence = styled.div`
   margin-bottom: 10px;
   font-weight: 100;
   font-size: 18px;
@@ -42,6 +60,7 @@ const Sentence = styled.p`
 `;
 
 const Explanation = styled.p`
+  flex: 3;
   font-size: 14px;
   line-height: 1.8;
   padding: 10px;
@@ -54,7 +73,7 @@ const About = () => {
   const fetchData = async () => {
     await api.getAPod().then(res => {
       setPhoto(res);
-      console.log(res);
+      // console.log(res);
     });
   };
 
@@ -69,15 +88,23 @@ const About = () => {
       </Title>
       <Text>
         <Sentence>
-          Hello. This page is for showing beautiful space photos, videos and
-          knowledges from NASA.
+          Hello. This page is for showing beautiful photos, videos and
+          knowledges of space and nature from NASA. You can search images that
+          you want to see. Enjoy!
           <br />
         </Sentence>
       </Text>
       <Text>
         <h2>About Today's main</h2>
         {photo ? (
-          <Explanation>{photo.explanation}</Explanation>
+          <Contents>
+            <Photo>
+              <img src={photo.url} alt={photo.title} />
+            </Photo>
+            <Explanation>
+              <p>{photo.explanation}</p>
+            </Explanation>
+          </Contents>
         ) : (
           <img src="./assets/reload.svg" alt="loading" />
         )}

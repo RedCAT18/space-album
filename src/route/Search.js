@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { api } from '../api/index';
@@ -106,22 +106,23 @@ const ArrowZone = styled.div`
   padding: 10px;
 `;
 
-const separatePages = data => {
-  //100개 배열을 10개씩 나누어 array에 담기
-  let array = [];
-  for (let i = 0; i < 10; i++) {
-    array.push(data.slice(i * 10, (i + 1) * 10));
-  }
-  return array;
-};
-
 const Search = () => {
   const [quote, setQuote] = useState('');
   const [category, setCategory] = useState('q');
-  const [data, setData] = useState(null);
+  const [resources, setResources] = useState(null);
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pages, setPages] = useState(1);
+
+  const separatePages = data => {
+    //100개 배열을 10개씩 나누어 array에 담기
+    let array = [];
+    let len = data.length;
+    for (let i = 0; i < len / 10; i++) {
+      array.push(data.slice(i * 10, (i + 1) * 10));
+    }
+    return array;
+  };
 
   const handleChange = e => {
     setQuote(e.target.value);
@@ -132,29 +133,47 @@ const Search = () => {
   };
 
   const sendRequest = async () => {
+    if (quote === '') return;
     setLoading(true);
+
+    const payload = { quote, category };
+    await api.getSearch(payload).then(res => {
+      setResources(separatePages(res));
+      // setResults(res);
+
+      // setResults(res.slice(0, 10));
+    });
     setQuote('');
     setCategory('q');
-    if (quote !== '') {
-      const payload = { quote, category };
-      await api.getSearch(payload).then(res => {
-        const arrays = separatePages(res);
-        console.log(arrays);
-        setResults(arrays[0]);
-        setData(arrays);
-        // setResults(res.slice(0, 10));
-        setLoading(false);
-        document.getElementById('inputText').value = '';
-      });
+
+    setLoading(false);
+    document.getElementById('inputText').value = '';
+  };
+
+  useEffect(() => {
+    if (resources) {
+      setResults(resources[pages]);
+    }
+  }, [pages, resources]);
+
+  const goPrevPage = () => {
+    console.log('prev');
+    if (pages !== 1) {
+      setPages(pages - 1);
     }
   };
 
-  const goPrevPage = () => {};
-
-  const goNextPage = () => {};
+  const goNextPage = () => {
+    console.log('next');
+    if (pages !== resources.length - 1) {
+      setPages(pages + 1);
+    }
+  };
 
   const RenderArrow = dirt => {
-    return results ? <Arrow props={dirt} /> : null;
+    const func = dirt === 'next' ? goNextPage : goPrevPage;
+
+    return results ? <Arrow props={dirt} onClick={func} /> : null;
   };
 
   return (
@@ -184,11 +203,9 @@ const Search = () => {
           ? results.map((result, idx) => <Show key={idx} {...result} />)
           : loading && <img src="./assets/reload.svg" alt="loading" />}
       </Content>
-      {/* {RenderArrow('Left')} */}
-      {/* {RenderArrow('Right')} */}
       <ArrowZone>
-        <Arrow props={'Left'} />
-        <Arrow props={'Right'} />
+        {RenderArrow('prev')}
+        {RenderArrow('next')}
       </ArrowZone>
     </Container>
   );
