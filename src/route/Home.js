@@ -57,7 +57,7 @@ const Home = () => {
   const fetchData = async () => {
     await api.getAPod().then(res => {
       setPhoto(res);
-      console.log(res);
+      // console.log(res);
     });
   };
 

@@ -5,6 +5,7 @@ import { api } from '../api/index';
 
 import Show from '../components/Show/';
 import Arrow from '../components/Arrow/';
+import NoResults from '../components/NoResults/';
 
 const categories = [
   { id: 1, name: 'Quote', value: 'q' },
@@ -104,6 +105,10 @@ const ArrowZone = styled.div`
   align-items: center;
   margin: 20px;
   padding: 10px;
+  color: white;
+  span {
+    margin: 0 20px;
+  }
 `;
 
 const Search = () => {
@@ -134,14 +139,14 @@ const Search = () => {
 
   const sendRequest = async () => {
     if (quote === '') return;
+    setPages(1);
+    setResources(null);
+    setResults(null);
     setLoading(true);
 
     const payload = { quote, category };
     await api.getSearch(payload).then(res => {
       setResources(separatePages(res));
-      // setResults(res);
-
-      // setResults(res.slice(0, 10));
     });
     setQuote('');
     setCategory('q');
@@ -153,28 +158,25 @@ const Search = () => {
   useEffect(() => {
     if (resources) {
       setResults(resources[pages]);
+      window.scrollTo(0, 0);
     }
   }, [pages, resources]);
 
-  const goPrevPage = () => {
-    console.log('prev');
-    if (pages !== 1) {
-      setPages(pages - 1);
-    }
+  const goPrevPage = data => {
+    if (pages === 1) return;
+    setPages(data);
   };
 
-  const goNextPage = () => {
-    console.log('next');
-    if (pages !== resources.length - 1) {
-      setPages(pages + 1);
-    }
+  const goNextPage = data => {
+    if (pages === resources.length - 1) return;
+    setPages(data);
   };
 
-  const RenderArrow = dirt => {
-    const func = dirt === 'next' ? goNextPage : goPrevPage;
-
-    return results ? <Arrow props={dirt} onClick={func} /> : null;
-  };
+  // const RenderArrow = dirt => {
+  //   const func = dirt === 'next' ? goNextPage : goPrevPage;
+  //   console.log(func);
+  //   return results ? <Arrow props={dirt} onClick={func} /> : null;
+  // };
 
   return (
     <Container>
@@ -199,14 +201,24 @@ const Search = () => {
       </SearchBox>
 
       <Content>
-        {results && results.length !== 0
-          ? results.map((result, idx) => <Show key={idx} {...result} />)
-          : loading && <img src="./assets/reload.svg" alt="loading" />}
+        {results && results.length !== 0 ? (
+          results.map((result, idx) => <Show key={idx} {...result} />)
+        ) : loading ? (
+          <img src="./assets/reload.svg" alt="loading" />
+        ) : (
+          <NoResults />
+        )}
       </Content>
-      <ArrowZone>
-        {RenderArrow('prev')}
-        {RenderArrow('next')}
-      </ArrowZone>
+
+      {results ? (
+        <ArrowZone>
+          <Arrow direct={'prev'} handlePage={goPrevPage} pages={pages} />
+          <span>
+            Page {pages} of {resources.length}
+          </span>
+          <Arrow direct={'next'} handlePage={goNextPage} pages={pages} />
+        </ArrowZone>
+      ) : null}
     </Container>
   );
 };

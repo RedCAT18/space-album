@@ -14,12 +14,19 @@ const Position = styled.div`
   }
 `;
 
-const Arrow = ({ props }) => {
+const Arrow = props => {
+  const { direct, handlePage, pages } = props;
+  // console.log(direct, handlePage, pages);
+  const movePage = () => {
+    // console.log(direct, 'currentPage:', pages);
+    return direct === 'prev' ? handlePage(pages - 1) : handlePage(pages + 1);
+  };
+
   const iconName =
-    props === 'next' ? faChevronCircleRight : faChevronCircleLeft;
+    props.direct === 'next' ? faChevronCircleRight : faChevronCircleLeft;
 
   return (
-    <Position>
+    <Position onClick={movePage}>
       <FontAwesomeIcon size="3x" icon={iconName} />
     </Position>
   );

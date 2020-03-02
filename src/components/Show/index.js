@@ -6,12 +6,18 @@ const Frame = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   margin: 20px;
   padding: 20px;
   border-radius: 10px;
   background-color: white;
   box-shadow: 0 13px 27px -5px rgba(50, 50, 93, 0.25),
     0 8px 16px -8px rgba(0, 0, 0, 0.3), 0 -6px 16px -6px rgba(0, 0, 0, 0.025);
+  img {
+    width: 100%;
+    max-width: 1024px;
+    height: auto;
+  }
 `;
 
 const Title = styled.h1`
