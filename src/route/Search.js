@@ -172,12 +172,6 @@ const Search = () => {
     setPages(data);
   };
 
-  // const RenderArrow = dirt => {
-  //   const func = dirt === 'next' ? goNextPage : goPrevPage;
-  //   console.log(func);
-  //   return results ? <Arrow props={dirt} onClick={func} /> : null;
-  // };
-
   return (
     <Container>
       <Title>
@@ -224,5 +218,3 @@ const Search = () => {
 };
 
 export default Search;
-
-//q, description, keywords, location, title, year_Start, year_end

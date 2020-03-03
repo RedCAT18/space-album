@@ -145,3 +145,20 @@ table {
     #0f2027
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
+
+.switch-enter {
+  transform: translate(-100%, 0);
+}
+
+.switch-leave {
+  transform: translate(0, 0);
+}
+
+.switch-enter.switch-enter-active {
+  transform: translate(0, 0);
+}
+
+.switch-leave.switch-leave-active {
+  transform: translate(100%, 0);
+  transition: transform 500ms;
+}

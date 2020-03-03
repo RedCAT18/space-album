@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { api } from '../api/index';
+import { Transition } from 'react-transition-group';
 
 const Container = styled.div`
   display: flex;
@@ -51,13 +52,43 @@ const Video = styled.object`
   margin-bottom: 40px;
 `;
 
+const defaultStyle = {
+  transition: `opacity 1000ms ease`,
+  opacity: 0
+};
+
+const transitionStyles = {
+  entering: { opacity: 0 },
+  entered: { opacity: 1 },
+  exiting: { opacity: 0 },
+  exited: { opacity: 0 }
+};
+
 const Home = () => {
   const [photo, setPhoto] = useState({});
+  const [entered, setEntered] = useState(false);
+
+  const Gallery = ({ in: inProp }) => {
+    return (
+      <Transition in={inProp} timeout={1000} appear unmountOnExit>
+        {state => (
+          <Content style={{ ...defaultStyle, ...transitionStyles[state] }}>
+            {RenderMedia()}
+            <Title>
+              <h1>{photo?.title}</h1>
+            </Title>
+            <Date>{photo?.date}</Date>
+          </Content>
+        )}
+      </Transition>
+    );
+  };
 
   const fetchData = async () => {
     await api.getAPod().then(res => {
-      setPhoto(res);
       // console.log(res);
+      setPhoto(res);
+      setEntered(true);
     });
   };
 
@@ -76,13 +107,7 @@ const Home = () => {
   return (
     <Container>
       {photo && photo.url ? (
-        <Content>
-          {RenderMedia()}
-          <Title>
-            <h1>{photo?.title}</h1>
-          </Title>
-          <Date>{photo?.date}</Date>
-        </Content>
+        <Gallery in={entered} />
       ) : (
         <img src="./assets/reload.svg" alt="loading" />
       )}

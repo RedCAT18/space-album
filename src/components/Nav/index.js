@@ -7,7 +7,7 @@ import styled from 'styled-components';
 const Container = styled.div`
   display: flex;
   position: fixed;
-  right: 40px;
+  left: 40px;
   top: 40px;
   background-color: white;
   border-radius: 10px;

@@ -27,16 +27,17 @@ const Text = styled.div`
   padding: 40px;
   margin-top: 40px;
   color: white;
-  h2 {
-    margin-bottom: 20px;
-    font-size: 18px;
-    font-weight: 100;
+  h1 {
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 400;
   }
 `;
 
 const Contents = styled.div`
   display: flex;
   flex-direction: row;
+  align-items: center;
 `;
 
 const Photo = styled.div`
@@ -64,7 +65,7 @@ const Explanation = styled.p`
   font-size: 14px;
   line-height: 1.8;
   padding: 10px;
-  text-indent: 20px;
+  text-indent: 10px;
 `;
 
 const About = () => {
@@ -95,15 +96,13 @@ const About = () => {
         </Sentence>
       </Text>
       <Text>
-        <h2>About Today's main</h2>
+        <h1>About Today's main</h1>
         {photo ? (
           <Contents>
             <Photo>
               <img src={photo.url} alt={photo.title} />
             </Photo>
-            <Explanation>
-              <p>{photo.explanation}</p>
-            </Explanation>
+            <Explanation>{photo.explanation}</Explanation>
           </Contents>
         ) : (
           <img src="./assets/reload.svg" alt="loading" />
