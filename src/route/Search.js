@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import styled from 'styled-components';
+import './animations.css';
 
 import { api } from '../api/index';
 
@@ -22,6 +24,7 @@ const Container = styled.div`
   width: 80%;
   min-width: 768px;
   margin: 80px auto;
+  padding: 10px;
   background-color: rgba(255, 255, 255, 0.5);
   border-radius: 10px;
   box-shadow: 0 13px 27px -5px rgba(50, 50, 93, 0.25),
@@ -95,7 +98,8 @@ const Content = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 90%;
+  width: 95%;
+  margin: auto;
 `;
 
 const ArrowZone = styled.div`
@@ -111,13 +115,14 @@ const ArrowZone = styled.div`
   }
 `;
 
-const Search = () => {
+const Search = ({ in: inProp }) => {
   const [quote, setQuote] = useState('');
   const [category, setCategory] = useState('q');
   const [resources, setResources] = useState(null);
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pages, setPages] = useState(1);
+  const [entered, setEntered] = useState(false);
 
   const separatePages = data => {
     //100개 배열을 10개씩 나누어 array에 담기
@@ -158,17 +163,20 @@ const Search = () => {
   useEffect(() => {
     if (resources) {
       setResults(resources[pages]);
+      setEntered(true);
       window.scrollTo(0, 0);
     }
-  }, [pages, resources]);
+  }, [pages, resources, results]);
 
   const goPrevPage = data => {
     if (pages === 1) return;
+
     setPages(data);
   };
 
   const goNextPage = data => {
     if (pages === resources.length - 1) return;
+
     setPages(data);
   };
 
@@ -193,17 +201,28 @@ const Search = () => {
         />
         <SubmitButton onClick={sendRequest}>Search</SubmitButton>
       </SearchBox>
-
-      <Content>
-        {results && results.length !== 0 ? (
-          results.map((result, idx) => <Show key={idx} {...result} />)
-        ) : loading ? (
-          <img src="./assets/reload.svg" alt="loading" />
-        ) : (
-          <NoResults />
-        )}
-      </Content>
-
+      <TransitionGroup className="results">
+        <Content>
+          {results && results.length !== 0 ? (
+            results.map((result, idx) => (
+              <CSSTransition
+                key={idx}
+                in={entered}
+                timeout={500}
+                classNames="result"
+                mountOnEnter
+                unmountOnExit
+              >
+                <Show {...result} />
+              </CSSTransition>
+            ))
+          ) : loading ? (
+            <img src="./assets/reload.svg" alt="loading" />
+          ) : (
+            <NoResults />
+          )}
+        </Content>
+      </TransitionGroup>
       {results ? (
         <ArrowZone>
           <Arrow direct={'prev'} handlePage={goPrevPage} pages={pages} />
